@@ -1,19 +1,24 @@
 import { useState } from "react";
 import Joi from "joi";
 import registerService from "./RegisterService";
+import { Navigate, useNavigate } from "react-router";
+import Button from "../Button";
 
 export default function Register() {
   const [mobile, setMobile] = useState("");
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState({ message: "", status: false });
+  const navigate = useNavigate();
 
   const handleSetMobile = (e) => {
     setMobile(e.target.value);
   };
 
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    registerService(mobile, setError);
+
+    const res = await registerService(mobile, setError, setLoading);
+    if (res) navigate("/otp-code");
   };
 
   return (
@@ -35,7 +40,8 @@ export default function Register() {
               type="text"
               name="mobile"
               value={mobile}
-              className="w-full border border-gray-300 rounded-md py-2 px-4 bg-gray-50 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none"
+              className="w-full border border-gray-300 rounded-md py-2 px-4
+               bg-gray-50 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none"
             />
             {error.status && (
               <span className="text-sm font-bold text-red-600 block mt-1">
@@ -43,12 +49,7 @@ export default function Register() {
               </span>
             )}
           </div>
-          <button
-            type="submit"
-            className="w-full bg-red-600 text-white py-2 rounded-md text-center text-lg font-medium transition duration-300 hover:bg-red-700"
-          >
-            ورود
-          </button>
+          <Button loading={loading} msg="ورود" />
         </form>
       </div>
     </div>

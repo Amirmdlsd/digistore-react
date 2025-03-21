@@ -14,9 +14,10 @@ const joiSchema = Joi.object({
     }),
 });
 
-export default async function registerService(phone, setError) {
+export default async function registerService(phone, setError, setLoading) {
   try {
-    setError({ message: "", status: false }); // Reset error state
+    setError({ message: "", status: false });
+    setLoading(true); // Reset error state
 
     const { error } = joiSchema.validate({ phone });
 
@@ -25,9 +26,23 @@ export default async function registerService(phone, setError) {
         message: error.details[0].message,
         status: true,
       });
-      return;
+      setLoading(false);
+      return false;
     }
+
+    // Assuming you'll make an API request here
+    // const response = await axiosInstance.post("/register", { phone });
+    // Simulate success for now
+    setLoading(false);
+    return true; // Return true if registration is successful
   } catch (error) {
-    throw new Error(error.message);
+    setLoading(false);
+    setError({
+      message: error.response
+        ? error.response.data.message
+        : "An error occurred",
+      status: true,
+    });
+    return false;
   }
 }
